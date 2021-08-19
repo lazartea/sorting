@@ -1,6 +1,5 @@
 (ns sorting.parse-test
   (:require [clojure.test :refer [deftest testing is are]]
-            [clojure.java.io :as io]
             [sorting.test-utils.fixtures :as f]
             [sorting.parse :as p]))
 
@@ -23,9 +22,9 @@
 (deftest read-file
   (testing "read-file returns what we expect when file exists"
     (are [x y] (= x y)
-      f/pipe-initial   (p/read-file (io/resource "input-files/pipe.txt"))
-      f/space-initial  (p/read-file (io/resource "input-files/space.txt"))  
-      f/comma-initial  (p/read-file (io/resource "input-files/comma.txt"))))
+      f/pipe-initial   (p/read-file "input-files/pipe.txt")
+      f/space-initial  (p/read-file "input-files/space.txt")
+      f/comma-initial  (p/read-file "input-files/comma.txt")))
              
   (testing "read-file handles error when file does not exist"
     (let [response (with-out-str (p/read-file "fake-file.txt"))]
@@ -34,9 +33,9 @@
 (deftest split-file-content
   (testing "split-file-content returns what we expect"
     (are [x y] (= x y)
-      f/pipe-split  (p/split-file-content #"\s\|\s" f/pipe-initial)
-      f/space-split (p/split-file-content #" " f/space-initial)
-      f/comma-split (p/split-file-content #", " f/comma-initial))))
+      f/pipe-split  (p/split-file-content f/pipe-initial)
+      f/space-split (p/split-file-content f/space-initial)
+      f/comma-split (p/split-file-content f/comma-initial))))
 
 (deftest format-file-content
   (testing "format-file-content returns what we expect"
@@ -54,4 +53,4 @@
 
 (deftest create-records
   (testing "build-records returns what we expect"
-    (is (= f/unsorted-records p/create-records))))
+    (is (= f/unsorted-records (p/create-records ["input-files/pipe.txt" "input-files/comma.txt" "input-files/space.txt"])))))

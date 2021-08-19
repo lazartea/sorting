@@ -2,16 +2,21 @@
 
 A simple project which reads in data from local files, sorts the data, and prints the results to the console.
 
+## Acceptance Criteria
+Create a command line application. The program should:
+  * Read the files from your local environment.
+  * Print out all the input data sorted together in the following ways:
+    * Sort 1 - by gender (females before males) then by last name ascending
+    * Sort 2 - by birthdate, ascending then by last name ascending
+    * Sort 3 - by last name, descending
+
+For all three sorts, ensure that fields are displayed in the following order:
+  * last name, first name, gender, date of birth, favorite color 
+  * Dates should be displayed in the format M/D/YYYY.
+
+The program output should match the contents of the `expected_output.txt` file.
+
 ## File Structure
-### resources dir
-The resources directory contains input files as well as an `expected_output.txt` file used for testing. 
-
-The Input files are located in the `resources\input-files` directory. Each line in each files contains data in one of the following formats:
-
-* `LastName | FirstName | MiddleInitial | Gender | FavoriteColor | DateOfBirth`
-* `LastName, FirstName, Gender, FavoriteColor, DateOfBirth`
-* `LastName FirstName MiddleInitial Gender DateOfBirth FavoriteColor`
-
 ### src/sorting directory
 The `src/sorting` directory contains four files:
 * `src/sorting/core.clj`: This contains the `-main` function.
@@ -33,11 +38,20 @@ The `src/sorting` directory contains four files:
 
 Test files for each of these namespaces are located at `test/sorting`. `test/sorting/test_utils` contains fixtures that are used for testing purposes. 
 
+## Data Files
+Data files must be placed in the resources directory. The current files are used for testing purposes,
+but more can be added as long as they are .txt files which follow one of the following formats:
+* `LastName | FirstName | MiddleInitial | Gender | FavoriteColor | DateOfBirth`
+* `LastName, FirstName, Gender, FavoriteColor, DateOfBirth`
+* `LastName FirstName MiddleInitial Gender DateOfBirth FavoriteColor`
+
 ## How to run
-* To run: `lein run`
-* To run tests: `lein test :all`
+* To run call `lein run` along with one or more file paths. The file paths should not include the resources directory.
+  * Ex: `lein run "input-files/comma.txt" "input-files/pipe.txt" "input-files/space.txt"`
+* To run all tests: `lein test :all`
 * To run a single test file: `lein test :only <namespace>`
-  * For example, `lein test :only sorting.parse-test` runs all of the tests in the `test/sorting/parse_test.clj` namespace. `lein test :only sorting.parse-test/create-records` tests only the `create-records` test within the `test/sorting/parse_test.clj` namespace.
+  * `lein test :only sorting.parse-test` runs all of the tests in the `test/sorting/parse_test.clj` namespace. 
+  * `lein test :only sorting.parse-test/create-records` tests only the `create-records` test within the `test/sorting/parse_test.clj` namespace.
 
 ## How to build
 * `lein uberjar`

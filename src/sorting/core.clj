@@ -7,6 +7,8 @@
 (defn -main
   "Entrypoint. Calls sorting methods on parsed records 
    and outputs formatted results to the console."
-  [&]
-  (-> (sort/all-sort parse/create-records)
-      (out/output)))
+  [& args]
+  (let [files (into [] args)]
+    (-> (parse/create-records files)
+        (sort/all-sort)
+        (out/output))))

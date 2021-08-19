@@ -65,30 +65,19 @@
           result (merge-vals (merge-sort first-half comparison direction) (merge-sort second-half comparison direction) comparison direction)]
       result)))
 
-(defn sort-1
-  "Takes a vector of maps. Returns a vector of maps sorted by 
-   gender (females before males) and then by last name ascending"
-  [records]
-  (let [comp-keys [:gender :last]]
-    (into [] (merge-sort records comp-keys 1))))
+(defn get-comparator
+  "Given a vector of comparison keys and a direction, returns a 
+  comparison function."
+  [comp-keys direction]
+  (fn [record1 record2] (merge-compare record1 record2 comp-keys direction)))
 
-(defn sort-2
-  "Takes a vector of maps. Returns a vector of maps 
-   sorted by date of birth and then by last name ascending"
-  [records]
-  (let [comp-keys [:dob :last]]
-    (into [] (merge-sort records comp-keys 1))))
-
-(defn sort-3
-"Takes a vector of maps. Returns a vector of maps
- sorted by last name decending"
-  ;by last name, descending
-  [records]
-  (let [comp-keys [:last]]
-    (into [] (merge-sort records comp-keys (- 1)))))
+(defn sort-by-params
+  "Sorts a vector of maps using comparison keys and a direction"
+  [records comp-keys direction]
+  (into [] (sort (get-comparator comp-keys direction) records)))
 
 (defn all-sort
   "Takes a vector of maps. Returns a vector of vectors containing 
    sorted maps."
   [records]
-  [(sort-1 records) (sort-2 records) (sort-3 records)])
+  [(sort-by-params records [:gender :last] 1) (sort-by-params records [:dob :last] 1) (sort-by-params records [:last] (- 1))])

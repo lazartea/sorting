@@ -1,0 +1,3 @@
+Swift, Taylor, Female, Yellow, 12/13/1989
+Potter, Harry, Male, Green, 7/31/1980
+Rogers, Steve, Male, Red, 7/4/1918

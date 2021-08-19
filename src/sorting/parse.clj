@@ -1,26 +1,7 @@
 (ns sorting.parse
   "Methods which read from files and format their data."
-  (:import java.io.FileNotFoundException)
   (:require [clojure.java.io :as io]
             [clojure.string :as str]))
-
-(def pipe-file
-  {:type "pipe"
-   :path (io/resource "input-files/pipe.txt")
-   :delimiter #"\s\|\s"
-   :indices [0 1 3 5 4]})
-
-(def space-file
-  {:type "space"
-   :path (io/resource "input-files/space.txt")
-   :delimiter #" "
-   :indices [0 1 3 4 5]})
-
-(def comma-file
-  {:type "space"
-   :path (io/resource "input-files/comma.txt")
-   :delimiter #", "
-   :indices [0 1 2 4 3]})
 
 (defn standardize-gender
   [gender]
@@ -47,19 +28,36 @@
    a vector of strings for each line in the file."
   [path]
   (try
-    (with-open [reader (io/reader path)]
+    (with-open [reader (io/reader (io/resource path))]
       (reduce conj [] (line-seq reader)))
-    (catch FileNotFoundException e
+    ;;if the path doesn't exist in the resources dir, 
+    ;;(io/resource path) will return nil, and we will see
+    ;;an IllegalArgumentException when calling 
+    ;;io/reader on nil
+    (catch java.lang.IllegalArgumentException e
       (println (format "Input file %s is not in the resources directory." path)))
     (catch Exception e
       (println (str "An unexpected error occurred: " e)))))
+
+(defn get-indices
+  [delimiter]
+  (case (str delimiter)
+    " " [0 1 3 4 5]
+    ", " [0 1 2 4 3]
+    "\\s\\|\\s" [0 1 3 5 4]))
+
+(defn get-delimiter
+  [string]
+  (let [delimiters [#"\s\|\s", #", ", #" "]]
+    (first (filter (fn [delim] (re-find delim string)) delimiters))))
 
 (defn split-file-content
   "Takes a delimiter and a vector of strings.
    Separates each string by delimiter. Returns
    a vector of vectors containing strings."
-  [delimiter content]
-  (mapv #(str/split % delimiter) content))
+  [content]
+  (let [delimiter (get-delimiter (first content))]
+    (mapv #(str/split % delimiter) content)))
 
 (defn format-file-content
   "Takes a vector of vectors of strings as well
@@ -78,19 +76,17 @@
   [content]
   (mapv #(record %) content))
 
-(def create-records
+(defn create-records
+  [file-paths]
   "Reads each file line by line. 
    Splits file content by delimiter.
    Formats file content correctly.
    Returns a vector of maps based on formatted data"
-  (flatten 
-   (into [] 
-         (for [file [pipe-file comma-file space-file]]
-           (let [{path :path
-                  indices :indices
-                  delimiter :delimiter} file]
-
-             (->> (read-file path)
-                  (split-file-content delimiter)
-                  (format-file-content indices)
-                  (build-records)))))))
+  (into []
+    (flatten
+      (for [path file-paths]
+        (let [file-contents (read-file path)
+              indices (get-indices (get-delimiter (first file-contents)))]
+          (->> (split-file-content file-contents)
+               (format-file-content indices)
+               (build-records)))))))
